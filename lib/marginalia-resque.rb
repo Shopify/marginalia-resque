@@ -13,7 +13,7 @@ module Marginalia::Resque
       params = params[0]
     end
     Marginalia::Resque.previous_comment = Marginalia::Comment.comment
-    Marginalia::Comment.comment = "job:#{job_klass.name},params:#{params.to_json}"
+    Marginalia::Comment.comment = "job:#{job_klass.name},params:#{params.to_json[0,100]}"
   end
 
   def self.clear_after_job!
