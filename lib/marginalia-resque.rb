@@ -6,20 +6,20 @@ require 'json'
 require 'marginalia-resque/version'
 
 module Marginalia::Resque
-  mattr_accessor :previous_comment, :current_job_signature
+  mattr_accessor :previous_comment, :current_job_id
 
   def self.update_with_job!(job_klass, params)
     if Array === params && params.size == 1 && Hash === params[0]
       params = params[0]
     end
-    self.current_job_signature = BackgroundQueue.job_signature(job_klass, params)
+    self.current_job_id = params['job_id']
     Marginalia::Resque.previous_comment = Marginalia::Comment.comment
-    Marginalia::Comment.comment = "job:#{job_klass.name},job_signature:#{current_job_signature}"
+    Marginalia::Comment.comment = "job:#{job_klass.name},job_id:#{current_job_id}"
   end
 
   def self.clear_after_job!
     Marginalia::Comment.comment = Marginalia::Resque.previous_comment
-    Marginalia::Resque.current_job_signature = nil
+    Marginalia::Resque.current_job_id = nil
     Marginalia::Resque.previous_comment = nil
   end
 end
